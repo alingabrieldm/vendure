@@ -642,6 +642,20 @@ export const activeOrderCustomerDocument = graphql(`
     }
 `);
 
+export const getActiveOrderCustomerUserDocument = graphql(`
+    query GetActiveOrderCustomerUser {
+        activeOrder {
+            customer {
+                id
+                user {
+                    id
+                    verified
+                }
+            }
+        }
+    }
+`);
+
 export const setCustomerDocument = graphql(
     `
         mutation SetCustomerForOrder($input: CreateCustomerInput!) {
@@ -845,6 +859,7 @@ export const addPaymentDocument = graphql(
     `
         mutation AddPaymentToOrder($input: PaymentInput!) {
             addPaymentToOrder(input: $input) {
+                __typename
                 ...TestOrderWithPayments
                 ... on ErrorResult {
                     errorCode
@@ -861,6 +876,12 @@ export const addPaymentDocument = graphql(
                 }
                 ... on IneligiblePaymentMethodError {
                     eligibilityCheckerMessage
+                }
+                ... on CouponRemovedDuringCheckoutError {
+                    removedCouponCodes
+                    previousTotalWithTax
+                    newTotalWithTax
+                    currencyCode
                 }
             }
         }
